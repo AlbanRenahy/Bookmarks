@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Routes configuration.
  *
@@ -23,6 +24,35 @@
 
 use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
+use Cake\Routing\Router;
+
+Router::defaultRouteClass(DashedRoute::class);
+
+// Nouvelle route ajoutée pour notre action "tagged".
+// Le caractère `*` en fin de chaîne indique à CakePHP que cette action a
+// des paramètres passés
+Router::scope(
+    '/bookmarks',
+    ['controller' => 'Bookmarks'],
+    function ($routes) {
+        $routes->connect('/tagged/*', ['action' => 'tags']);
+    }
+);
+
+Router::scope('/', function ($routes) {
+    // Connecte la page d'accueil par défaut et les routes /pages/*.
+    $routes->connect('/', [
+        'controller' => 'Pages',
+        'action' => 'display', 'home'
+    ]);
+    $routes->connect('/pages/*', [
+        'controller' => 'Pages',
+        'action' => 'display'
+    ]);
+
+    // Connecte les routes basées sur les conventions par défaut.
+    $routes->fallbacks();
+});
 
 /*
  * The default class to use for all routes

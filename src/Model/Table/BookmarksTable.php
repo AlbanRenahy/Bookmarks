@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Model\Table;
@@ -99,5 +100,26 @@ class BookmarksTable extends Table
         $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
 
         return $rules;
+    }
+
+    // L'argument $query est une instance de \Cake\ORM\Query.
+    // Le tableau $options contiendra les tags que nous avons passé à find('tagged')
+    // dans l'action de notre Controller
+    public function findTagged(Query $query, array $options)
+    {
+        $bookmarks = $this->find()
+            ->select(['id', 'url', 'title', 'description']);
+
+        if (empty($options['tags'])) {
+            $bookmarks
+                ->leftJoinWith('Tags')
+                ->where(['Tags.title IS' => null]);
+        } else {
+            $bookmarks
+                ->innerJoinWith('Tags')
+                ->where(['Tags.title IN ' => $options['tags']]);
+        }
+
+        return $bookmarks->group(['Bookmarks.id']);
     }
 }

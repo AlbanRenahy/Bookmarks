@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -108,5 +109,26 @@ class BookmarksController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    
+    public function tags()
+    {
+        // La clé 'pass' est fournie par CakePHP et contient tous les segments
+        // d'URL de la "request" (instance de \Cake\Network\Request)
+        $tags = $this->request->getParam('pass');
+
+        // On utilise l'objet "Bookmarks" (une instance de
+        // \App\Model\Table\BookmarksTable) pour récupérer les bookmarks avec
+        // ces tags
+        $bookmarks = $this->Bookmarks->find('tagged', [
+            'tags' => $tags
+        ]);
+
+        // Passe les variables au template de vue (view).
+        $this->set([
+            'bookmarks' => $bookmarks,
+            'tags' => $tags
+        ]);
     }
 }
